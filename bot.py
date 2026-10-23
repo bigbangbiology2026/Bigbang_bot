@@ -1,7 +1,8 @@
+import os
 import telebot
-import time
 
-TOKEN = '8604260086:AAH1nccnsHrw9mfjojE1lcULhGUeZq-5lEU'
+# خواندن توکن از متغیرهای محیطی ریل‌وی
+TOKEN = os.getenv('BOT_TOKEN', 'توکن_جدید_شما_اینجا')
 bot = telebot.TeleBot(TOKEN)
 
 try:
