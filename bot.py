@@ -10,7 +10,7 @@ except Exception:
     pass
 
 ADMIN_IDS = [
-    6202317657,      
+    6202317657,     
     8304730388       
 ]
 
@@ -26,8 +26,9 @@ cash_prices = {
     "cash_full": ("پکیج کامل هر ۴ بانک تست (نقدی)", "1,500,000")
 }
 
+# 🔄 آپدیت شرایط اقساط به دو قسط ۸۵۰ تومانی
 installment_prices = {
-    "inst_full": ("پکیج کامل هر ۴ بانک تست (اقساطی)", "۶۰۰,۰۰۰ تومان (قسط اول از کل ۱,۸۰۰,۰۰۰ تومان - دو قسط بعدی هر کدام ۶۰۰,۰۰۰ تومان)")
+    "inst_full": ("پکیج کامل هر ۴ بانک تست (اقساطی)", "۸۵۰,۰۰۰ تومان (قسط اول از کل ۱,۷۰۰,۰۰۰ تومان - قسط دوم ۸۵۰,۰۰۰ تومان)")
 }
 
 user_selected_product = {}
@@ -51,7 +52,8 @@ def get_cash_markup():
 
 def get_installment_markup():
     markup = telebot.types.InlineKeyboardMarkup()
-    markup.row(telebot.types.InlineKeyboardButton("💎 پکیج کامل اقساطی (قسط اول ۶۰۰ تومانی)", callback_data="inst_full"))
+    # 🔄 آپدیت متن دکمه اقساط
+    markup.row(telebot.types.InlineKeyboardButton("💎 پکیج کامل اقساطی (قسط اول ۸۵۰ تومانی)", callback_data="inst_full"))
     markup.row(telebot.types.InlineKeyboardButton("🔙 بازگشت به منوی اصلی", callback_data="back_to_main"))
     return markup
 
@@ -181,12 +183,13 @@ def handle_contact(message):
                 f"✅ شماره تلفن شما ({message.contact.phone_number}) با موفقیت ثبت شد.",
                 reply_markup=get_persistent_keyboard()
             )
+            # 🔄 آپدیت متن شرایط ۲ قسطه
             bot.send_message(
                 message.chat.id,
                 (
                     "🤝 بخش خرید اقساطی ویژه پکیج کامل\n\n"
-                    "💰 قیمت کل: ۱,۸۰۰,۰۰۰ تومان\n"
-                    "📋 شرایط پرداخت: قسط اول ۶۰۰,۰۰۰ تومان (همین الان) + دو قسط بعدی هر کدام ۶۰۰,۰۰۰ تومان\n\n"
+                    "💰 قیمت کل: ۱,۷۰۰,۰۰۰ تومان\n"
+                    "📋 شرایط پرداخت: قسط اول ۸۵۰,۰۰۰ تومان (همین الان) + قسط دوم ۸۵۰,۰۰۰ تومان\n\n"
                     "محصول خود را انتخاب کنید:"
                 ),
                 reply_markup=get_installment_markup()
@@ -284,8 +287,8 @@ def handle_mode_selection(call):
                     message_id=call.message.message_id,
                     text=(
                         "🤝 بخش خرید اقساطی ویژه پکیج کامل\n\n"
-                        "💰 قیمت کل: ۱,۸۰۰,۰۰۰ تومان\n"
-                        "📋 شرایط پرداخت: قسط اول ۶۰۰,۰۰۰ تومان (همین الان) + دو قسط بعدی هر کدام ۶۰۰,۰۰۰ تومان (دو ماه بعد، هر ماه یک قسط)\n\n"
+                        "💰 قیمت کل: ۱,۷۰۰,۰۰۰ تومان\n"
+                        "📋 شرایط پرداخت: قسط اول ۸۵۰,۰۰۰ تومان (همین الان) + قسط دوم ۸۵۰,۰۰۰ تومان\n\n"
                         "محصول خود را انتخاب کنید:"
                     ),
                     reply_markup=get_installment_markup()
