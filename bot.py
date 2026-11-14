@@ -1,5 +1,6 @@
 import telebot
 import time
+from datetime import datetime, timedelta
 
 TOKEN = '8604260086:AAHekjFhUfSPndCQ_3KppKFgzHDWeUJ_afI'
 bot = telebot.TeleBot(TOKEN)
@@ -26,13 +27,13 @@ cash_prices = {
     "cash_full": ("پکیج کامل هر ۴ بانک تست (نقدی)", "1,500,000")
 }
 
-# 🔄 آپدیت شرایط اقساط به دو قسط ۸۵۰ تومانی
 installment_prices = {
-    "inst_full": ("پکیج کامل هر ۴ بانک تست (اقساطی)", "۸۵۰,۰۰۰ تومان (قسط اول از کل ۱,۷۰۰,۰۰۰ تومان - قسط دوم ۸۵۰,۰۰۰ تومان)")
+    "inst_full": ("پکیج کامل هر ۴ بانک تست (اقساطی)", "۸۵۰,۰۰۰ تومان (قسط اول ۸۵۰,۰۰۰ تومان - قسط دوم ۸۵۰,۰۰۰ تومان، دقیقاً یک ماه بعد)")
 }
 
 user_selected_product = {}
 user_phones = {}
+user_purchase_dates = {}  # برای ذخیره تاریخ خرید و محاسبه قسط دوم
 
 def get_main_menu_markup():
     markup = telebot.types.InlineKeyboardMarkup()
@@ -52,7 +53,6 @@ def get_cash_markup():
 
 def get_installment_markup():
     markup = telebot.types.InlineKeyboardMarkup()
-    # 🔄 آپدیت متن دکمه اقساط
     markup.row(telebot.types.InlineKeyboardButton("💎 پکیج کامل اقساطی (قسط اول ۸۵۰ تومانی)", callback_data="inst_full"))
     markup.row(telebot.types.InlineKeyboardButton("🔙 بازگشت به منوی اصلی", callback_data="back_to_main"))
     return markup
@@ -183,13 +183,12 @@ def handle_contact(message):
                 f"✅ شماره تلفن شما ({message.contact.phone_number}) با موفقیت ثبت شد.",
                 reply_markup=get_persistent_keyboard()
             )
-            # 🔄 آپدیت متن شرایط ۲ قسطه
             bot.send_message(
                 message.chat.id,
                 (
                     "🤝 بخش خرید اقساطی ویژه پکیج کامل\n\n"
                     "💰 قیمت کل: ۱,۷۰۰,۰۰۰ تومان\n"
-                    "📋 شرایط پرداخت: قسط اول ۸۵۰,۰۰۰ تومان (همین الان) + قسط دوم ۸۵۰,۰۰۰ تومان\n\n"
+                    "📋 شرایط پرداخت: قسط اول ۸۵۰,۰۰۰ تومان (همین الان) + قسط دوم ۸۵۰,۰۰۰ تومان (دقیقاً یک ماه بعد)\n\n"
                     "محصول خود را انتخاب کنید:"
                 ),
                 reply_markup=get_installment_markup()
@@ -207,6 +206,13 @@ def handle_receipt(message):
     product_purchased = user_selected_product.get(user_id, "نامشخص")
     phone = user_phones.get(user_id, "ثبت نشده")
     
+    # محاسبه تاریخ خرید و تاریخ سررسید قسط دوم (یک ماه بعد)
+    purchase_time = datetime.now()
+    next_installment_time = purchase_time + timedelta(days=30)
+    
+    date_str = purchase_time.strftime('%Y-%m-%d %H:%M')
+    next_date_str = next_installment_time.strftime('%Y-%m-%d')
+    
     markup = telebot.types.InlineKeyboardMarkup()
     if username:
         markup.add(telebot.types.InlineKeyboardButton("💬 چت مستقیم با کاربر", url=f"https://t.me/{username}"))
@@ -218,9 +224,15 @@ def handle_receipt(message):
         f"👤 نام: {user_name}\n"
         f"🔗 آیدی: {chat_info}\n"
         f"📱 شماره تماس: {phone}\n"
-        f"🆔 آیدی عددی: {user_id}\n\n"
-        "برای تایید روی دکمه زیر بزنید."
+        f"🆔 آیدی عددی: {user_id}\n"
+        f"📅 تاریخ ثبت فیش: {date_str}\n"
     )
+    
+    # اگر خرید اقساطی بود، تاریخ قسط دوم رو هم به ادمین نشون بده
+    if "اقساطی" in product_purchased:
+        caption += f"⏰ سررسید قسط دوم: {next_date_str} (یک ماه بعد)\n"
+        
+    caption += "\nبرای تایید روی دکمه زیر بزنید."
     
     if message.photo:
         file_id = message.photo[-1].file_id
@@ -288,7 +300,7 @@ def handle_mode_selection(call):
                     text=(
                         "🤝 بخش خرید اقساطی ویژه پکیج کامل\n\n"
                         "💰 قیمت کل: ۱,۷۰۰,۰۰۰ تومان\n"
-                        "📋 شرایط پرداخت: قسط اول ۸۵۰,۰۰۰ تومان (همین الان) + قسط دوم ۸۵۰,۰۰۰ تومان\n\n"
+                        "📋 شرایط پرداخت: قسط اول ۸۵۰,۰۰۰ تومان (همین الان) + قسط دوم ۸۵۰,۰۰۰ تومان (دقیقاً یک ماه بعد)\n\n"
                         "محصول خود را انتخاب کنید:"
                     ),
                     reply_markup=get_installment_markup()
