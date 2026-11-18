@@ -3,7 +3,7 @@ import time
 from datetime import datetime, timedelta
 
 # توکن جدید رو جایگزین این خط کن (یا همینجا بذار)
-TOKEN = '8604260086:AAHekjFhUfSPndCQ_3KppKFgzHDWeUJ_afI'
+TOKEN = '8604260086:AAGvPSb_kdUTulP8E5OBFq7XTQfqOz5FSyk'
 bot = telebot.TeleBot(TOKEN)
 
 try:
