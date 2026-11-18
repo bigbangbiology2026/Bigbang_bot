@@ -2,7 +2,8 @@ import telebot
 import time
 from datetime import datetime, timedelta
 
-TOKEN = '8604260086:AAGvPSb_kdUTulP8E5OBFq7XTQfqOz5FSyk'
+# توکن جدید رو جایگزین این خط کن (یا همینجا بذار)
+TOKEN = '8604260086:AAHekjFhUfSPndCQ_3KppKFgzHDWeUJ_afI'
 bot = telebot.TeleBot(TOKEN)
 
 try:
@@ -19,21 +20,22 @@ SUPPORT_USERNAME = "Sup_Bigbang"
 FREE_ZIST_LINK = "https://t.me/Bigbangzist"  
 FREE_SHIMI_LINK = "https://t.me/Bigbangchem"  
 
+# 🏷 قیمت‌های جدید با تخفیف اعمال شد
 cash_prices = {
-    "cash_zist": ("بانک تست زیست جامع (نقدی)", "499,000"),
-    "cash_shimi": ("بانک تست شیمی جامع (نقدی)", "449,000"),
-    "cash_fizik": ("بانک تست فیزیک جامع (نقدی)", "419,000"),
-    "cash_math": ("بانک تست ریاضی جامع (نقدی)", "449,000"),
-    "cash_full": ("پکیج کامل هر ۴ بانک تست (نقدی)", "1,500,000")
+    "cash_zist": ("بانک تست زیست جامع (نقدی)", "400,000"),
+    "cash_shimi": ("بانک تست شیمی جامع (نقدی)", "360,000"),
+    "cash_fizik": ("بانک تست فیزیک جامع (نقدی)", "330,000"),
+    "cash_math": ("بانک تست ریاضی جامع (نقدی)", "360,000"),
+    "cash_full": ("پکیج کامل هر ۴ بانک تست (نقدی - تخفیف‌دار)", "1,250,000")
 }
 
+# 🏷 اقساط جدید: کل ۱,۵۰۰,۰۰۰ تومان (دو قسط ۷۵۰ تومانی)
 installment_prices = {
-    "inst_full": ("پکیج کامل هر ۴ بانک تست (اقساطی)", "۸۵۰,۰۰۰ تومان (قسط اول ۸۵۰,۰۰۰ تومان - قسط دوم ۸۵۰,۰۰۰ تومان، دقیقاً یک ماه بعد)")
+    "inst_full": ("پکیج کامل هر ۴ بانک تست (اقساطی)", "۷۵۰,۰۰۰ تومان (قسط اول ۷۵۰,۰۰۰ تومان - قسط دوم ۷۵۰,۰۰۰ تومان، دقیقاً یک ماه بعد)")
 }
 
 user_selected_product = {}
 user_phones = {}
-user_purchase_dates = {}  # برای ذخیره تاریخ خرید و محاسبه قسط دوم
 
 def get_main_menu_markup():
     markup = telebot.types.InlineKeyboardMarkup()
@@ -43,17 +45,17 @@ def get_main_menu_markup():
 
 def get_cash_markup():
     markup = telebot.types.InlineKeyboardMarkup()
-    markup.row(telebot.types.InlineKeyboardButton("🧬 زیست جامع - 499,000 تومان", callback_data="cash_zist"))
-    markup.row(telebot.types.InlineKeyboardButton("🧪 شیمی جامع - 449,000 تومان", callback_data="cash_shimi"))
-    markup.row(telebot.types.InlineKeyboardButton("⚗️ فیزیک جامع - 419,000 تومان", callback_data="cash_fizik"))
-    markup.row(telebot.types.InlineKeyboardButton("📐 ریاضی جامع - 449,000 تومان", callback_data="cash_math"))
-    markup.row(telebot.types.InlineKeyboardButton("🔥 پکیج کامل ۴ درس - 1,500,000 تومان", callback_data="cash_full"))
+    markup.row(telebot.types.InlineKeyboardButton("🧬 زیست جامع - 400,000 تومان (تخفیف ویژه)", callback_data="cash_zist"))
+    markup.row(telebot.types.InlineKeyboardButton("🧪 شیمی جامع - 360,000 تومان (تخفیف ویژه)", callback_data="cash_shimi"))
+    markup.row(telebot.types.InlineKeyboardButton("⚗️ فیزیک جامع - 330,000 تومان (تخفیف ویژه)", callback_data="cash_fizik"))
+    markup.row(telebot.types.InlineKeyboardButton("📐 ریاضی جامع - 360,000 تومان (تخفیف ویژه)", callback_data="cash_math"))
+    markup.row(telebot.types.InlineKeyboardButton("🔥 پکیج کامل ۴ درس - 1,250,000 تومان (تخفیف عالی)", callback_data="cash_full"))
     markup.row(telebot.types.InlineKeyboardButton("🔙 بازگشت به منوی اصلی", callback_data="back_to_main"))
     return markup
 
 def get_installment_markup():
     markup = telebot.types.InlineKeyboardMarkup()
-    markup.row(telebot.types.InlineKeyboardButton("💎 پکیج کامل اقساطی (قسط اول ۸۵۰ تومانی)", callback_data="inst_full"))
+    markup.row(telebot.types.InlineKeyboardButton("💎 پکیج کامل اقساطی (قسط اول ۷۵۰ تومانی)", callback_data="inst_full"))
     markup.row(telebot.types.InlineKeyboardButton("🔙 بازگشت به منوی اصلی", callback_data="back_to_main"))
     return markup
 
@@ -163,7 +165,7 @@ def handle_persistent_buttons(message):
                 "🛡 خیالت راحتِ راحت؛ تضمین ۱۰۰ درصدی!\n"
                 "انقدر از کارمون مطمئنیم که تضمین برگشت وجه در صورت نارضایتی گذاشتیم تا با خیالِ تختِ تخت خرید کنی.\n\n"
                 "💡 با این بانک تست، پرونده‌ی کتاب‌های کمک‌درسی قطور و گیج‌کننده برای همیشه بسته میشه و کاملاً بی‌نیاز میشی.\n\n"
-                "👇 همین الان نوع خرید خود رو انتخاب کن:"
+                "👇 همین الان با تخفیف‌های ویژه نوع خرید خود رو انتخاب کن:"
             )
             bot.send_message(
                 message.chat.id,
@@ -187,8 +189,8 @@ def handle_contact(message):
                 message.chat.id,
                 (
                     "🤝 بخش خرید اقساطی ویژه پکیج کامل\n\n"
-                    "💰 قیمت کل: ۱,۷۰۰,۰۰۰ تومان\n"
-                    "📋 شرایط پرداخت: قسط اول ۸۵۰,۰۰۰ تومان (همین الان) + قسط دوم ۸۵۰,۰۰۰ تومان (دقیقاً یک ماه بعد)\n\n"
+                    "💰 قیمت کل: ۱,۵۰۰,۰۰۰ تومان\n"
+                    "📋 شرایط پرداخت: قسط اول ۷۵۰,۰۰۰ تومان (همین الان) + قسط دوم ۷۵۰,۰۰۰ تومان (دقیقاً یک ماه بعد)\n\n"
                     "محصول خود را انتخاب کنید:"
                 ),
                 reply_markup=get_installment_markup()
@@ -206,7 +208,6 @@ def handle_receipt(message):
     product_purchased = user_selected_product.get(user_id, "نامشخص")
     phone = user_phones.get(user_id, "ثبت نشده")
     
-    # محاسبه تاریخ خرید و تاریخ سررسید قسط دوم (یک ماه بعد)
     purchase_time = datetime.now()
     next_installment_time = purchase_time + timedelta(days=30)
     
@@ -228,7 +229,6 @@ def handle_receipt(message):
         f"📅 تاریخ ثبت فیش: {date_str}\n"
     )
     
-    # اگر خرید اقساطی بود، تاریخ قسط دوم رو هم به ادمین نشون بده
     if "اقساطی" in product_purchased:
         caption += f"⏰ سررسید قسط دوم: {next_date_str} (یک ماه بعد)\n"
         
@@ -273,7 +273,7 @@ def handle_mode_selection(call):
             bot.edit_message_text(
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
-                text="💳 بخش خرید نقدی\n\nمحصول مورد نظر خود را انتخاب کنید:",
+                text="💳 بخش خرید نقدی (با تخفیف‌های ویژه)\n\nمحصول مورد نظر خود را انتخاب کنید:",
                 reply_markup=get_cash_markup()
             )
         except Exception as e:
@@ -299,8 +299,8 @@ def handle_mode_selection(call):
                     message_id=call.message.message_id,
                     text=(
                         "🤝 بخش خرید اقساطی ویژه پکیج کامل\n\n"
-                        "💰 قیمت کل: ۱,۷۰۰,۰۰۰ تومان\n"
-                        "📋 شرایط پرداخت: قسط اول ۸۵۰,۰۰۰ تومان (همین الان) + قسط دوم ۸۵۰,۰۰۰ تومان (دقیقاً یک ماه بعد)\n\n"
+                        "💰 قیمت کل: ۱,۵۰۰,۰۰۰ تومان\n"
+                        "📋 شرایط پرداخت: قسط اول ۷۵۰,۰۰۰ تومان (همین الان) + قسط دوم ۷۵۰,۰۰۰ تومان (دقیقاً یک ماه بعد)\n\n"
                         "محصول خود را انتخاب کنید:"
                     ),
                     reply_markup=get_installment_markup()
